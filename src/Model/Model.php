@@ -64,17 +64,8 @@ class Model
 
     public function listTree()
     {
-        // $q = "SELECT 
-        // concat( repeat('-', COUNT(parent.id) - 1),child.title) 
-        // AS title,
-        // child.id
-        // FROM tree AS child,
-        // tree AS parent
-        // WHERE child.lft BETWEEN parent.lft AND parent.rgt
-        // GROUP BY child.id
-        // ORDER BY child.lft";
-
          $q = "SELECT 
+         parent_id,
          node.title AS title,
          (SELECT count(parent.id)-1
               FROM tree AS parent
@@ -85,4 +76,23 @@ class Model
         $result = $this->conn->query($q);
         return $result->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function buildTree(array $elements, int $parentId = 0): array
+        {
+            $branch = array();
+
+            foreach ($elements as &$element) {
+
+                if ($element['parent_id'] == $parentId) {
+                    $children = $this->buildTree($elements, $element['id']);
+                    if ($children) {
+                        $element['children'] = $children;
+                    }
+                    $branch[$element['id']] = $element;
+                    unset($element);
+                }
+            }
+            return $branch;
+        }
+
 } 
