@@ -11,15 +11,36 @@ li {
     border-radius: 5px;
 }
 
-form{
+form {
     border: 1px solid black;
     padding: 10px;
+    margin: 5px;
 }
 
-.formsContainer{
+.formsContainer {
     display: flex;
 }
 
-.alert > h3{
+.alert>h3 {
     text-align: center;
+}
+
+.hiddenCon {
+    position: absolute;
+    display: flex;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    position: sticky;
+    display: block;
+    z-index: 1;
+    background-color: rgba(198, 53, 55, 0.85);
+    width: 50%;
+    height: 50%;
+    border-radius: 15px;
 }

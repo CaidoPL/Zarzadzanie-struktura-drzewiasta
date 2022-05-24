@@ -32,31 +32,47 @@ class Controller
         $this->$action();
     }
 
-    public function listAction(): void
+    public function listAction(array $alert = []): void
     {
         $tree = $this->Model->listTree();
         $optionTree = $this->Model->optionTree();
         $newTree = $this->Model->buildTree($tree, 0);
-        $this->View->render($newTree, $optionTree);
+        $this->View->render($newTree, $optionTree, $this->request->getParam('action'));
     }
 
-    public function createAction()
+    public function createAction(): void
     {
         if ($this->request->hasPost()) {
             if (!empty($this->request->postParam('title'))) {
+                if (empty($this->request->postParam('parent'))) {
+                    $parent = 0;
+                } else {
+                    $parent = $this->request->postParam('parent');
+                }
                 $this->Model->createBranch([
                     'title' => $this->request->postParam('title'),
-                    'parent' => $this->request->postParam('parent')
+                    'parent' => $parent
                 ]);
-                $tree = $this->Model->listTree();
-                $optionTree = $this->Model->optionTree();
-                $newTree = $this->Model->buildTree($tree, 0);
-                $this->View->render($newTree, $optionTree, ['alert' => 'add']);
-            }else{
+                header("Location: /Zadanie%20rekru/?action=created");
+            } else {
                 header("Location: /Zadanie%20rekru/");
             }
         }
-        
+    }
+
+    public function deleteAction(): void
+    {
+        if ($this->request->hasPost()) {
+            if (!empty($this->request->postParam('toDelete'))) {
+                $deleteId = (int) $this->request->postParam('toDelete');
+                $this->Model->deleteNode($deleteId);
+                header("Location: /Zadanie%20rekru/?action=deleted");
+            } else {
+                header("Location: /Zadanie%20rekru/");
+            }
+        } else {
+            header("Location: /Zadanie%20rekru/");
+        }
     }
 
     private function action(): string

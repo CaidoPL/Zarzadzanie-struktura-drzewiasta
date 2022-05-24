@@ -82,7 +82,28 @@ class Model
     {
         $title = $params['title'];
         $id = (int) $params['parent'];
-        $q1 = "SELECT parent_id,
+        if ($id == 0) {
+            $q4 = "INSERT INTO `tree` (`title`,`lft`,`rgt`, `parent_id`) 
+            VALUES ('$title',1, 2, 0)";
+            $this->conn->query($q4);
+        } else {
+            $parent = $this->singleLeaf($id);
+            $parentId = $parent[0]['id'];
+            $childLft = $parent[0]['rgt'];
+            $childRgt = $childLft + 1;
+            $q2 = "UPDATE `tree` SET `lft` = `lft` + 2 WHERE `lft` >= $childLft";
+            $q3 = "UPDATE `tree` SET `rgt` = `rgt` + 2 WHERE `rgt` >= $childRgt-1";
+            $q4 = "INSERT INTO `tree` (`title`,`lft`,`rgt`, `parent_id`) 
+        VALUES ('$title',$childLft, $childRgt, $parentId)";
+            $this->conn->query($q2);
+            $this->conn->query($q3);
+            $this->conn->query($q4);
+        }
+    }
+
+    public function singleLeaf(int $id): array
+    {
+        $q = "SELECT parent_id,
         node.title AS title,
         (SELECT count(parent.id)-1
              FROM tree AS parent
@@ -90,18 +111,8 @@ class Model
         lft, rgt,
         node.id
         FROM tree AS node WHERE id = $id";
-        $result = $this->conn->query($q1);
-        $parent = $result->fetchAll(PDO::FETCH_ASSOC);
-        $parentId = $parent[0]['id'];
-        $childLft = $parent[0]['rgt'];
-        $childRgt = $childLft + 1;
-        $q2 = "UPDATE `tree` SET `lft` = `lft` + 2 WHERE `lft` >= $childLft";
-        $q3 = "UPDATE `tree` SET `rgt` = `rgt` + 2 WHERE `rgt` >= $childRgt-1";
-        $q4 = "INSERT INTO `tree` (`title`,`lft`,`rgt`, `parent_id`) 
-        VALUES ('$title',$childLft, $childRgt, $parentId)";
-        $this->conn->query($q2);
-        $this->conn->query($q3);
-        $this->conn->query($q4);
+        $result = $this->conn->query($q);
+        return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function buildTree(array $elements, int $parentId = 0): array
@@ -120,5 +131,20 @@ class Model
             }
         }
         return $branch;
+    }
+
+    public function deleteNode(int $id): void
+    {
+
+        $toDelete = $this->singleLeaf($id);
+        $lft = $toDelete[0]['lft'];
+        $rgt = $toDelete[0]['rgt'];
+        $numToDelete = $rgt + 1 - $lft;
+        $q1 = "DELETE FROM tree WHERE lft BETWEEN $lft AND $rgt";
+        $q2 = "UPDATE `tree` SET `lft` = `lft` - $numToDelete WHERE `lft` >= $lft";
+        $q3 = "UPDATE `tree` SET `rgt` = `rgt` - $numToDelete WHERE `rgt` >= $rgt";
+        $this->conn->query($q1);
+        $this->conn->query($q2);
+        $this->conn->query($q3);
     }
 }

@@ -12,16 +12,16 @@
 <body>
 
     <?php
-    if (!empty($alert['alert'])) {
+    if ($param) {
         echo "<div class='alert'>";
-        switch ($alert['alert']) {
-            case 'add':
+        switch ($param) {
+            case 'created':
                 echo "<h3 style='color: red;'>Dodano nową gałąź</h3>";
                 break;
             case 'delete':
                 echo "<h3 style='color: red;'>Usunięto gałąź</h3>";
                 break;
-        echo "</div>";
+                echo "</div>";
         }
     }
     ?>
@@ -30,6 +30,7 @@
             <p>Dodaj nową gałąź</p>
             <label>Wprowadź nazwę: <input type="text" name="title"></label><br>
             <label>Wybierz rodzica: <select name="parent" id="">
+                    <option value='0'>Główna kategoria</option>
                     <?php
                     foreach ($optionTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
@@ -40,7 +41,7 @@
         </form>
         <form action="/Zadanie%20rekru/?action=delete" method="post">
             <p>Usuń gałąź</p>
-            <label>Wybierz gałąź: <select name="parent" id="">
+            <label>Wybierz gałąź: <select name="toDelete" id="">
                     <?php
                     foreach ($optionTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
@@ -49,10 +50,15 @@
                 </select></label>
             <input type="submit" value="Usuń">
         </form>
+        <?php if ($param == 'deleteBar') : ?>
+            <div class="hiddenCon">
+                <div class="hidden"></div>
+            </div>
+        <?php endif ?>
     </div>
     <ul>
         <?php
-        // dump($alert);
+        dump($buildedTree);
         function loop($tree)
         {
             if (array_key_exists('children', $tree)) {
