@@ -1,0 +1,11 @@
+li{
+    list-style: none;
+}
+.list{
+    display: inline-block;
+    background-color: cyan;
+    padding: 2px;
+    margin: 2px;
+    border: 2px solid black;
+    border-radius: 5px;
+}

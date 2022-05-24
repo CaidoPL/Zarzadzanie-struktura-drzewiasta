@@ -19,7 +19,7 @@ class Model
             $this->validateConfig($config);
             $this->createConnection($config);
         } catch (PDOException $e) {
-            throw new StorageException('Connection error',400,$e);
+            throw new StorageException('Connection error', 400, $e);
         }
     }
 
@@ -45,31 +45,17 @@ class Model
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]
         );
-
-        // listing
-
-        // $q= "SELECT title,lft FROM tree ORDER BY lft";
-        // $result = $this->conn->query($q);
-        // $note = $result->fetchAll(PDO::FETCH_ASSOC);
-        // dump($note);
-
-        // depth
-        // $q = "SELECT child.title, count(parent.id)-1 AS depth
-        // FROM tree AS child,
-        // tree AS parent
-        // WHERE child.lft BETWEEN parent.lft AND parent.rgt
-        // GROUP BY child.id
-        // ORDER BY child.lft";
     }
 
-    public function listTree()
+    public function listTree(): array
     {
-         $q = "SELECT 
+        $q = "SELECT 
          parent_id,
          node.title AS title,
          (SELECT count(parent.id)-1
               FROM tree AS parent
               WHERE node.lft BETWEEN parent.lft AND parent.rgt) AS depth,
+        lft, rgt,
          node.id
          FROM tree AS node
          ORDER BY node.lft";
@@ -77,22 +63,62 @@ class Model
         return $result->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function optionTree(): array
+    {
+        $q = "SELECT 
+        concat( repeat('-', COUNT(parent.id) - 1),child.title) 
+        AS title,
+        child.id
+        FROM tree AS child,
+        tree AS parent
+        WHERE child.lft BETWEEN parent.lft AND parent.rgt
+        GROUP BY child.id
+        ORDER BY child.lft";
+        $result = $this->conn->query($q);
+        return $result->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createBranch(array $params)
+    {
+        $title = $params['title'];
+        $id = (int) $params['parent'];
+        $q1 = "SELECT parent_id,
+        node.title AS title,
+        (SELECT count(parent.id)-1
+             FROM tree AS parent
+             WHERE node.lft BETWEEN parent.lft AND parent.rgt) AS depth,
+        lft, rgt,
+        node.id
+        FROM tree AS node WHERE id = $id";
+        $result = $this->conn->query($q1);
+        $parent = $result->fetchAll(PDO::FETCH_ASSOC);
+        $parentId = $parent[0]['id'];
+        $childLft = $parent[0]['rgt'];
+        $childRgt = $childLft + 1;
+        $q2 = "UPDATE `tree` SET `lft` = `lft` + 2 WHERE `lft` >= $childLft";
+        $q3 = "UPDATE `tree` SET `rgt` = `rgt` + 2 WHERE `rgt` >= $childRgt-1";
+        $q4 = "INSERT INTO `tree` (`title`,`lft`,`rgt`, `parent_id`) 
+        VALUES ('$title',$childLft, $childRgt, $parentId)";
+        $this->conn->query($q2);
+        $this->conn->query($q3);
+        $this->conn->query($q4);
+    }
+
     public function buildTree(array $elements, int $parentId = 0): array
-        {
-            $branch = array();
+    {
+        $branch = array();
 
-            foreach ($elements as &$element) {
+        foreach ($elements as &$element) {
 
-                if ($element['parent_id'] == $parentId) {
-                    $children = $this->buildTree($elements, $element['id']);
-                    if ($children) {
-                        $element['children'] = $children;
-                    }
-                    $branch[$element['id']] = $element;
-                    unset($element);
+            if ($element['parent_id'] == $parentId) {
+                $children = $this->buildTree($elements, $element['id']);
+                if ($children) {
+                    $element['children'] = $children;
                 }
+                $branch[$element['id']] = $element;
+                unset($element);
             }
-            return $branch;
         }
-
-} 
+        return $branch;
+    }
+}
