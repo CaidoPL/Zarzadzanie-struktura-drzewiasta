@@ -43,15 +43,19 @@ class Controller
     public function createAction()
     {
         if ($this->request->hasPost()) {
-            if (!empty($this->request->postParam('title')) || !empty($this->request->postParam('parent'))) {
+            if (!empty($this->request->postParam('title'))) {
                 $this->Model->createBranch([
                     'title' => $this->request->postParam('title'),
                     'parent' => $this->request->postParam('parent')
                 ]);
-                
+                $tree = $this->Model->listTree();
+                $optionTree = $this->Model->optionTree();
+                $newTree = $this->Model->buildTree($tree, 0);
+                $this->View->render($newTree, $optionTree, ['alert' => 'add']);
+            }else{
+                header("Location: /Zadanie%20rekru/");
             }
         }
-            header("Location: /Zadanie%20rekru/");
         
     }
 

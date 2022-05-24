@@ -1,11 +1,25 @@
-li{
+li {
     list-style: none;
 }
-.list{
+
+.list {
     display: inline-block;
     background-color: cyan;
     padding: 2px;
     margin: 2px;
     border: 2px solid black;
     border-radius: 5px;
+}
+
+form{
+    border: 1px solid black;
+    padding: 10px;
+}
+
+.formsContainer{
+    display: flex;
+}
+
+.alert > h3{
+    text-align: center;
 }

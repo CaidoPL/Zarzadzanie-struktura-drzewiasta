@@ -66,7 +66,7 @@ class Model
     public function optionTree(): array
     {
         $q = "SELECT 
-        concat( repeat('-', COUNT(parent.id) - 1),child.title) 
+        concat( repeat('~', COUNT(parent.id) - 1),child.title) 
         AS title,
         child.id
         FROM tree AS child,

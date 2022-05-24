@@ -13,7 +13,6 @@ require_once("src/Utils/debug.php");
 
 use App\Controllers\Controller;
 use App\Exception\AppException;
-use App\Model\Model;
 use App\Request;
 
 $config = require_once("config/config.php");

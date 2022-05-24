@@ -10,36 +10,62 @@
 </head>
 
 <body>
+
+    <?php
+    if (!empty($alert['alert'])) {
+        echo "<div class='alert'>";
+        switch ($alert['alert']) {
+            case 'add':
+                echo "<h3 style='color: red;'>Dodano nową gałąź</h3>";
+                break;
+            case 'delete':
+                echo "<h3 style='color: red;'>Usunięto gałąź</h3>";
+                break;
+        echo "</div>";
+        }
+    }
+    ?>
     <div class="formsContainer">
         <form action="/Zadanie%20rekru/?action=create" method="post">
             <p>Dodaj nową gałąź</p>
-            <label><input type="text" name="title" placeholder="Wprowadź nazwę"></label>
+            <label>Wprowadź nazwę: <input type="text" name="title"></label><br>
             <label>Wybierz rodzica: <select name="parent" id="">
                     <?php
                     foreach ($optionTree as $tree) {
-                        echo "<option value='".$tree['id']."'>" . $tree['title'] . "</option>";
+                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
                     }
                     ?>
                 </select></label>
-                <input type="submit" value="add">
+            <input type="submit" value="Dodaj">
+        </form>
+        <form action="/Zadanie%20rekru/?action=delete" method="post">
+            <p>Usuń gałąź</p>
+            <label>Wybierz gałąź: <select name="parent" id="">
+                    <?php
+                    foreach ($optionTree as $tree) {
+                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                    }
+                    ?>
+                </select></label>
+            <input type="submit" value="Usuń">
         </form>
     </div>
     <ul>
         <?php
-        // dump($buildedTree);
+        // dump($alert);
         function loop($tree)
         {
             if (array_key_exists('children', $tree)) {
                 foreach ($tree['children'] as $tree) {
                     echo "<li><ul>";
-                    echo "<div class='list'>" . $tree['title'] . "</div>";
+                    echo "-<div class='list'>" . $tree['title'] . "</div>";
                     loop($tree);
                     echo "</li></ul>";
                 }
             }
         }
         foreach ($buildedTree as $tree) {
-            echo "<li><div class='list'>" . $tree['title'] . "</div></li>";
+            echo "<li>-<div class='list'>" . $tree['title'] . "</div></li>";
             loop($tree);
         }
 
