@@ -18,6 +18,9 @@
             case 'created':
                 echo "<h3 style='color: red;'>Dodano nową gałąź</h3>";
                 break;
+            case 'ErrorMissingTitle':
+                echo "<h3 style='color: red;'>Wprowadź tytuł przed dodaniem</h3>";
+                break;
             case 'deletedNode':
                 echo "<h3 style='color: red;'>Usunięto gałąź</h3>";
                 break;
@@ -29,7 +32,7 @@
                 break;
             case 'movedNodeError':
                 echo "<h3 style='color: red;'>Nie można przesunąć gałęzi</h3>";
-                break;    
+                break;
         }
     }
     ?>
@@ -42,26 +45,38 @@
         echo "</div></div>";
     }
     ?>
-     <?php if (!is_null($params['move']['toMove']) && !is_null($params['move']['whereMove'])) {
+    <?php if (!is_null($params['move']['toMove']) && !is_null($params['move']['whereMove'])) {
 
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/Zadanie%20rekru/?action=list'>Anuluj</a>";
-        echo "<a href='/Zadanie%20rekru/?action=test&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=".$params['move']['whereMove']."'>Przenieś sam obiekt</a>";
-        echo "<a href='/Zadanie%20rekru/?action=moveNode&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=".$params['move']['whereMove']."'>Przenieś cały węzeł</a>";
+        echo "<a href='/Zadanie%20rekru/?action=test&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś sam obiekt</a>";
+        echo "<a href='/Zadanie%20rekru/?action=moveNode&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś cały węzeł</a>";
 
         echo "</div></div>";
-     }
-    ?> 
+    }
+    ?>
+    <?php
+    function loopOption($tree, $pauza)
+    {
+        if (array_key_exists('children', $tree)) {
+            foreach ($tree['children'] as $tree) {
+                echo "<option value='" . $tree['id'] . "'>" . $pauza . $tree['title'] . "</option>";
+                loopOption($tree, $pauza . '~');
+            }
+        }
+    }
+    ?>
 
     <div class="formsContainer">
         <form action="/Zadanie%20rekru/?action=create" method="post">
             <p>Dodaj nowy obiekt</p>
             <label>Wprowadź nazwę: <input type="text" name="title"></label><br>
             <label>Wybierz rodzica: <select name="parent" id="">
-                    <option value='0'>Główna kategoria</option>
+                    <option value='0'>Nowy korzeń</option>
                     <?php
-                    foreach ($optionTree as $tree) {
+                    foreach ($buildedTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                        loopOption($tree, '~');
                     }
                     ?>
                 </select></label>
@@ -71,8 +86,9 @@
             <p>Usuń obiekt</p>
             <label>Wybierz obiekt do usunięcia: <select name="toDelete" id="">
                     <?php
-                    foreach ($optionTree as $tree) {
+                    foreach ($buildedTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                        loopOption($tree, '~');
                     }
                     ?>
                 </select></label>
@@ -83,15 +99,17 @@
             <p>Przenieś obiekt</p>
             <label>Wybierz obiekt do przeniesienia: <select name="toMove" id="">
                     <?php
-                    foreach ($optionTree as $tree) {
-                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
-                    }
+                   foreach ($buildedTree as $tree) {
+                       echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                       loopOption($tree, '~');
+                   }
                     ?>
                 </select></label><br>
             <label>Wybierz miejsce do którego obiekt zostanie przeniesiony <select name="whereMove" id="">
                     <?php
-                    foreach ($optionTree as $tree) {
+                    foreach ($buildedTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                        loopOption($tree, '~');
                     }
                     ?>
                 </select></label>
@@ -104,7 +122,9 @@
 
     <div class="listCon">
         <ul>
+
             <?php
+            dump($buildedTree);
             function loop($tree)
             {
                 if (array_key_exists('children', $tree)) {

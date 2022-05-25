@@ -35,7 +35,6 @@ class Controller
     public function listAction(array $alert = []): void
     {
         $tree = $this->Model->listTree();
-        $optionTree = $this->Model->optionTree();
         $newTree = $this->Model->buildTree($tree, 0);
         $params = [
             'alert' => $this->request->getParam('action', 'list'),
@@ -45,7 +44,7 @@ class Controller
                 'whereMove' => $this->request->getParam('whereMove', null)
             ]
         ];
-        $this->View->render($newTree, $optionTree, $params);
+        $this->View->render($newTree, $params);
     }
 
     public function createAction(): void

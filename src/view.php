@@ -8,7 +8,7 @@ use App\Request;
 
 class View
 {
-    public function render(array $buildedTree, array $optionTree, ?array $params): void
+    public function render(array $buildedTree, ?array $params): void
     {
         require_once("templates/mainView.php");
     }
