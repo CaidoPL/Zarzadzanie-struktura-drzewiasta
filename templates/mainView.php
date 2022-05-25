@@ -49,7 +49,7 @@
 
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/Zadanie%20rekru/?action=list'>Anuluj</a>";
-        echo "<a href='/Zadanie%20rekru/?action=test&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś sam obiekt</a>";
+        echo "<a href='/Zadanie%20rekru/?action=moveLeaf&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś sam obiekt</a>";
         echo "<a href='/Zadanie%20rekru/?action=moveNode&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś cały węzeł</a>";
 
         echo "</div></div>";
@@ -99,10 +99,10 @@
             <p>Przenieś obiekt</p>
             <label>Wybierz obiekt do przeniesienia: <select name="toMove" id="">
                     <?php
-                   foreach ($buildedTree as $tree) {
-                       echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
-                       loopOption($tree, '~');
-                   }
+                    foreach ($buildedTree as $tree) {
+                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                        loopOption($tree, '~');
+                    }
                     ?>
                 </select></label><br>
             <label>Wybierz miejsce do którego obiekt zostanie przeniesiony <select name="whereMove" id="">

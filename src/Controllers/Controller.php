@@ -89,14 +89,26 @@ class Controller
         }
     }
 
-    public function moveNodeAction(){
+    public function moveNodeAction(): void
+    {
         if (!empty($this->request->getParam('toMoveId')) && !empty($this->request->getParam('whereMoveId'))) {
-            
+
             $toMoveId = (int) $this->request->getParam('toMoveId');
             $whereMoveId = (int) $this->request->getParam('whereMoveId');
             $alert = $this->Model->moveNode($toMoveId, $whereMoveId);
             header("Location: /Zadanie%20rekru/?action=$alert");
-            
+        } else {
+            header("Location: /Zadanie%20rekru/");
+        }
+    }
+
+    public function moveLeafaction(): void
+    {
+        if (!empty($this->request->getParam('toMoveId')) && !empty($this->request->getParam('whereMoveId'))) {
+            $toMoveId = (int) $this->request->getParam('toMoveId');
+            $whereMoveId = (int) $this->request->getParam('whereMoveId');
+            $alert = $this->Model->moveLeaf($toMoveId, $whereMoveId);
+            header("Location: /Zadanie%20rekru/?action=$alert");
         } else {
             header("Location: /Zadanie%20rekru/");
         }

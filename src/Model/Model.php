@@ -51,14 +51,9 @@ class Model
     {
         $q = "SELECT 
          parent_id,
-         node.title AS title,
-         (SELECT count(parent.id)-1
-              FROM tree AS parent
-              WHERE node.lft BETWEEN parent.lft AND parent.rgt) AS depth,
-        lft, rgt,
-         node.id
+         node.title AS title, node.id
          FROM tree AS node
-         ORDER BY node.lft";
+         ORDER BY id";
         $result = $this->conn->query($q);
         return $result->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -95,7 +90,6 @@ class Model
         $branch = array();
 
         foreach ($elements as &$element) {
-
             if ($element['parent_id'] == $parentId) {
                 $children = $this->buildTree($elements, $element['id']);
                 if ($children) {
@@ -108,9 +102,8 @@ class Model
         return $branch;
     }
 
-
     public function deleteNode(int $id): void
-    {   
+    {
         $tree = $this->listTree();
         $buildedTree = $this->buildTree($tree, $id);
         $toDeleteId = [];
@@ -125,15 +118,15 @@ class Model
         $flag = true;
         array_push($toDeleteId, $id);
         $r = '';
-        foreach($toDeleteId as $value){
+        foreach ($toDeleteId as $value) {
             if ($flag == 'true') {
-                $r = $r.$value;
+                $r = $r . $value;
                 $flag = false;
-            }else{
-                $r = $r.','.$value;
-            }; 
+            } else {
+                $r = $r . ',' . $value;
+            };
         }
-        $q1 = "DELETE FROM tree WHERE id IN(".$r.")";
+        $q1 = "DELETE FROM tree WHERE id IN(" . $r . ")";
         $this->conn->query($q1);
     }
 
@@ -145,11 +138,10 @@ class Model
         $this->conn->query($q1);
         $q2 = "DELETE FROM tree WHERE id = $id";
         $this->conn->query($q2);
-      
     }
 
     public function moveNode(int $toMoveId, int $whereMoveId): string
-    {   
+    {
         $tree = $this->listTree();
         $buildedTree = $this->buildTree($tree, $toMoveId);
         $childrensId = [];
@@ -161,14 +153,29 @@ class Model
                 }
             }
         }
-        if($toMoveId == $whereMoveId){
+        if ($toMoveId == $whereMoveId) {
             return 'movedNodeError';
-        }elseif(in_array($whereMoveId, $childrensId)){
+        } elseif (in_array($whereMoveId, $childrensId)) {
             return 'movedNodeError';
-        }else{
+        } else {
             $q1 = "UPDATE tree SET parent_id = $whereMoveId WHERE id = $toMoveId";
             $this->conn->query($q1);
             return 'movedNode';
-        }   
+        }
+    }
+
+    public function moveLeaf(int $toMoveId, int $whereMoveId): string
+    {
+        $toMove = $this->singleLeaf($toMoveId);
+        $toMoveParent = $toMove['0']['parent_id'];
+        if ($toMoveId == $whereMoveId) {
+            return 'movedNodeError';
+        } else {
+            $q1 = "UPDATE tree SET parent_id = $toMoveParent WHERE parent_id = $toMoveId";
+            $q2 = "UPDATE tree SET parent_id = $whereMoveId WHERE id = $toMoveId";
+            $this->conn->query($q1);
+            $this->conn->query($q2);
+            return 'movedNode';
+        }
     }
 }
