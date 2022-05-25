@@ -24,7 +24,12 @@
             case 'deletedLeaf':
                 echo "<h3 style='color: red;'>Usunięto liść</h3>";
                 break;
-                echo "</div>";
+            case 'movedNode':
+                echo "<h3 style='color: red;'>Przeniesiono gałąź</h3>";
+                break;
+            case 'movedNodeError':
+                echo "<h3 style='color: red;'>Nie można przesunąć gałęzi</h3>";
+                break;    
         }
     }
     ?>
@@ -37,10 +42,20 @@
         echo "</div></div>";
     }
     ?>
+     <?php if (!is_null($params['move']['toMove']) && !is_null($params['move']['whereMove'])) {
+
+        echo "<div class='hiddenCon'> <div class='hidden'>";
+        echo "<a href='/Zadanie%20rekru/?action=list'>Anuluj</a>";
+        echo "<a href='/Zadanie%20rekru/?action=test&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=".$params['move']['whereMove']."'>Przenieś sam obiekt</a>";
+        echo "<a href='/Zadanie%20rekru/?action=moveNode&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=".$params['move']['whereMove']."'>Przenieś cały węzeł</a>";
+
+        echo "</div></div>";
+     }
+    ?> 
 
     <div class="formsContainer">
         <form action="/Zadanie%20rekru/?action=create" method="post">
-            <p>Dodaj nową gałąź</p>
+            <p>Dodaj nowy obiekt</p>
             <label>Wprowadź nazwę: <input type="text" name="title"></label><br>
             <label>Wybierz rodzica: <select name="parent" id="">
                     <option value='0'>Główna kategoria</option>
@@ -53,8 +68,8 @@
             <input type="submit" value="Dodaj">
         </form>
         <form action="/Zadanie%20rekru/" method="get">
-            <p>Usuń gałąź</p>
-            <label>Wybierz gałąź: <select name="toDelete" id="">
+            <p>Usuń obiekt</p>
+            <label>Wybierz obiekt do usunięcia: <select name="toDelete" id="">
                     <?php
                     foreach ($optionTree as $tree) {
                         echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
@@ -64,6 +79,25 @@
             <input type="submit" value="Usuń">
 
         </form>
+        <form action="/Zadanie%20rekru/" method="get">
+            <p>Przenieś obiekt</p>
+            <label>Wybierz obiekt do przeniesienia: <select name="toMove" id="">
+                    <?php
+                    foreach ($optionTree as $tree) {
+                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                    }
+                    ?>
+                </select></label><br>
+            <label>Wybierz miejsce do którego obiekt zostanie przeniesiony <select name="whereMove" id="">
+                    <?php
+                    foreach ($optionTree as $tree) {
+                        echo "<option value='" . $tree['id'] . "'>" . $tree['title'] . "</option>";
+                    }
+                    ?>
+                </select></label>
+            <input type="submit" value="Przenieś">
+
+        </form>
 
     </div>
 
@@ -71,7 +105,6 @@
     <div class="listCon">
         <ul>
             <?php
-            // dump($params);
             function loop($tree)
             {
                 if (array_key_exists('children', $tree)) {

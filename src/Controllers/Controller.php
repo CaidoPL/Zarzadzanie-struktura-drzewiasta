@@ -39,7 +39,11 @@ class Controller
         $newTree = $this->Model->buildTree($tree, 0);
         $params = [
             'alert' => $this->request->getParam('action', 'list'),
-            'toDelete' => $this->request->getParam('toDelete', null)
+            'toDelete' => $this->request->getParam('toDelete', null),
+            'move' => [
+                'toMove' => $this->request->getParam('toMove', null),
+                'whereMove' => $this->request->getParam('whereMove', null)
+            ]
         ];
         $this->View->render($newTree, $optionTree, $params);
     }
@@ -81,6 +85,19 @@ class Controller
             $deleteId = (int) $this->request->getParam('id');
             $this->Model->deleteLeaf($deleteId);
             header("Location: /Zadanie%20rekru/?action=deletedLeaf");
+        } else {
+            header("Location: /Zadanie%20rekru/");
+        }
+    }
+
+    public function moveNodeAction(){
+        if (!empty($this->request->getParam('toMoveId')) && !empty($this->request->getParam('whereMoveId'))) {
+            
+            $toMoveId = (int) $this->request->getParam('toMoveId');
+            $whereMoveId = (int) $this->request->getParam('whereMoveId');
+            $alert = $this->Model->moveNode($toMoveId, $whereMoveId);
+            header("Location: /Zadanie%20rekru/?action=$alert");
+            
         } else {
             header("Location: /Zadanie%20rekru/");
         }

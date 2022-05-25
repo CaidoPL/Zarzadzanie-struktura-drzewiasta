@@ -162,4 +162,33 @@ class Model
         $this->conn->query($q3);
         $this->conn->query($q4);
     }
+
+    public function moveNode(int $toMoveId, int $whereMoveId): string
+    {
+        $moveObject = $this->singleLeaf($toMoveId);
+        $newParent = $this->singleLeaf($whereMoveId);
+        $moveObjectRgt = $moveObject['0']['rgt'];
+        $moveObjectLft = $moveObject['0']['lft'];
+        $newParentRgt = $newParent['0']['rgt'];
+        if ($moveObjectRgt < $newParentRgt) {
+            $q1 = "UPDATE tree SET lft = CASE
+            WHEN lft BETWEEN $moveObjectRgt + 1 AND $newParentRgt - 2 THEN lft - ($moveObjectRgt +1 - $moveObjectLft)
+            WHEN lft BETWEEN $moveObjectLft AND $moveObjectRgt THEN lft + ($newParentRgt - 1 - $moveObjectRgt)
+            END,
+            rgt = CASE
+            WHEN rgt BETWEEN $moveObjectRgt + 1 AND $newParentRgt - 1 THEN rgt - ($moveObjectRgt +1 - $moveObjectLft)
+            WHEN rgt BETWEEN $moveObjectLft AND $moveObjectRgt THEN rgt + ($newParentRgt - 1 - $moveObjectRgt)
+            END
+            WHERE lft BETWEEN $moveObjectLft AND $newParentRgt - 1";
+            $q2 = "Update tree SET rgt = $newParentRgt WHERE id = $whereMoveId";
+            $q3 = "UPDATE tree SET parent_id = $whereMoveId WHERE id = $toMoveId";
+
+            $this->conn->query($q1);
+            $this->conn->query($q2);
+            $this->conn->query($q3);
+            return 'movedNode';
+        }else{
+            return 'movedNodeError';
+        }
+    }
 }
