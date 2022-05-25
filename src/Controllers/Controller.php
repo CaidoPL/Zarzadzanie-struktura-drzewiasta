@@ -37,7 +37,11 @@ class Controller
         $tree = $this->Model->listTree();
         $optionTree = $this->Model->optionTree();
         $newTree = $this->Model->buildTree($tree, 0);
-        $this->View->render($newTree, $optionTree, $this->request->getParam('action'));
+        $params = [
+            'alert' => $this->request->getParam('action', 'list'),
+            'toDelete' => $this->request->getParam('toDelete', null)
+        ];
+        $this->View->render($newTree, $optionTree, $params);
     }
 
     public function createAction(): void
@@ -60,16 +64,23 @@ class Controller
         }
     }
 
-    public function deleteAction(): void
+    public function deleteNodeAction(): void
     {
-        if ($this->request->hasPost()) {
-            if (!empty($this->request->postParam('toDelete'))) {
-                $deleteId = (int) $this->request->postParam('toDelete');
-                $this->Model->deleteNode($deleteId);
-                header("Location: /Zadanie%20rekru/?action=deleted");
-            } else {
-                header("Location: /Zadanie%20rekru/");
-            }
+        if (!empty($this->request->getParam('id'))) {
+            $deleteId = (int) $this->request->getParam('id');
+            $this->Model->deleteNode($deleteId);
+            header("Location: /Zadanie%20rekru/?action=deletedNode");
+        } else {
+            header("Location: /Zadanie%20rekru/");
+        }
+    }
+
+    public function deleteLeafAction(): void
+    {
+        if (!empty($this->request->getParam('id'))) {
+            $deleteId = (int) $this->request->getParam('id');
+            $this->Model->deleteLeaf($deleteId);
+            header("Location: /Zadanie%20rekru/?action=deletedLeaf");
         } else {
             header("Location: /Zadanie%20rekru/");
         }

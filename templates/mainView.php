@@ -12,19 +12,32 @@
 <body>
 
     <?php
-    if ($param) {
+    if ($params['alert']) {
         echo "<div class='alert'>";
-        switch ($param) {
+        switch ($params['alert']) {
             case 'created':
                 echo "<h3 style='color: red;'>Dodano nową gałąź</h3>";
                 break;
-            case 'delete':
+            case 'deletedNode':
                 echo "<h3 style='color: red;'>Usunięto gałąź</h3>";
+                break;
+            case 'deletedLeaf':
+                echo "<h3 style='color: red;'>Usunięto liść</h3>";
                 break;
                 echo "</div>";
         }
     }
     ?>
+    <?php if (!is_null($params['toDelete'])) {
+        echo "<div class='hiddenCon'> <div class='hidden'>";
+        echo "<a href='/Zadanie%20rekru/?action=list'>Anuluj</a>";
+        echo "<a href='/Zadanie%20rekru/?action=deleteNode&id=" . $params['toDelete'] . "'>Usuń cały węzeł</a>";
+        echo "<a href='/Zadanie%20rekru/?action=deleteLeaf&id=" . $params['toDelete'] . "'>Usuń pojedyńczy liść</a>";
+
+        echo "</div></div>";
+    }
+    ?>
+
     <div class="formsContainer">
         <form action="/Zadanie%20rekru/?action=create" method="post">
             <p>Dodaj nową gałąź</p>
@@ -39,7 +52,7 @@
                 </select></label>
             <input type="submit" value="Dodaj">
         </form>
-        <form action="/Zadanie%20rekru/?action=delete" method="post">
+        <form action="/Zadanie%20rekru/" method="get">
             <p>Usuń gałąź</p>
             <label>Wybierz gałąź: <select name="toDelete" id="">
                     <?php
@@ -49,34 +62,35 @@
                     ?>
                 </select></label>
             <input type="submit" value="Usuń">
+
         </form>
-        <?php if ($param == 'deleteBar') : ?>
-            <div class="hiddenCon">
-                <div class="hidden"></div>
-            </div>
-        <?php endif ?>
+
     </div>
-    <ul>
-        <?php
-        dump($buildedTree);
-        function loop($tree)
-        {
-            if (array_key_exists('children', $tree)) {
-                foreach ($tree['children'] as $tree) {
-                    echo "<li><ul>";
-                    echo "-<div class='list'>" . $tree['title'] . "</div>";
-                    loop($tree);
-                    echo "</li></ul>";
+
+
+    <div class="listCon">
+        <ul>
+            <?php
+            // dump($params);
+            function loop($tree)
+            {
+                if (array_key_exists('children', $tree)) {
+                    foreach ($tree['children'] as $tree) {
+                        echo "<li><ul>";
+                        echo "-<div class='list'>" . $tree['title'] . "</div>";
+                        loop($tree);
+                        echo "</li></ul>";
+                    }
                 }
             }
-        }
-        foreach ($buildedTree as $tree) {
-            echo "<li>-<div class='list'>" . $tree['title'] . "</div></li>";
-            loop($tree);
-        }
+            foreach ($buildedTree as $tree) {
+                echo "<li>-<div class='list'>" . $tree['title'] . "</div></li>";
+                loop($tree);
+            }
 
-        ?>
-    </ul>
+            ?>
+        </ul>
+    </div>
 </body>
 
 </html>

@@ -147,4 +147,19 @@ class Model
         $this->conn->query($q2);
         $this->conn->query($q3);
     }
+
+    public function deleteLeaf(int $id): void
+    {
+        $toDelete = $this->singleLeaf($id);
+        $lft = $toDelete[0]['lft'];
+        $parentId = $toDelete[0]['parent_id'];
+        $q1 = "UPDATE `tree` SET `lft` = `lft` - 1 WHERE `lft` > $lft";
+        $q2 = "UPDATE `tree` SET `rgt` = `rgt` - 1 WHERE `rgt` > $lft";
+        $q3 = "UPDATE `tree` SET `parent_id` = $parentId WHERE `parent_id` = $id";
+        $q4 = "DELETE FROM tree WHERE `id` = $id";
+        $this->conn->query($q1);
+        $this->conn->query($q2);
+        $this->conn->query($q3);
+        $this->conn->query($q4);
+    }
 }
