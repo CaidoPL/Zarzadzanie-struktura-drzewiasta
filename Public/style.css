@@ -1,5 +1,6 @@
 li {
     list-style: none;
+    
 }
 
 .list {
@@ -7,8 +8,20 @@ li {
     background-color: cyan;
     padding: 2px;
     margin: 2px;
-    border: 2px solid black;
+    border: 1px solid black;
     border-radius: 5px;
+}
+
+.listCon {
+    margin-top: 5px;
+}
+
+.linkCon {
+    margin: 10px;
+}
+
+.linkCon>a {
+    border: 1px solid black;
 }
 
 form {
@@ -21,7 +34,7 @@ form {
     display: flex;
 }
 
-.alert>h3 {
+#alert>h3 {
     text-align: center;
 }
 
@@ -33,7 +46,6 @@ form {
     height: 100vh;
     justify-content: center;
     align-items: center;
-    /* background-color: rgba(67, 255, 10, 0.596); */
 }
 
 .hidden {
@@ -61,3 +73,42 @@ a:visited {
     color: black;
     text-decoration: none;
 }
+
+.formsContainer {
+    display: flex;
+    justify-content: space-around;
+}
+
+ul, #myUL {
+    list-style-type: none;
+  }
+  
+  #myUL {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .caret {
+    cursor: pointer;
+  }
+  
+  .caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  
+  .caret-down::before {
+    -ms-transform: rotate(90deg);
+    -webkit-transform: rotate(90deg); 
+    transform: rotate(90deg);  
+  }
+  
+  .nested {
+    display: none;
+  }
+  
+  .active {
+    display: block;
+  }

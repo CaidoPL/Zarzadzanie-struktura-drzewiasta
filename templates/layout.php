@@ -10,21 +10,18 @@
 </head>
 
 <body>
-    <script type="text/javascript" src="Public/script.js"></script>
     <?php
     require_once("templates/alert.php");
     ?>
     <?php if (!is_null($params['toDelete'])) {
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/?action=list'>Anuluj</a>";
-        echo "<a href='/?action=deleteNode&id=" . $params['toDelete'] . "'>Usuń cały węzeł</a>";
         echo "<a href='/?action=deleteLeaf&id=" . $params['toDelete'] . "'>Usuń pojedyńczy liść</a>";
-
+        echo "<a href='/?action=deleteNode&id=" . $params['toDelete'] . "'>Usuń cały węzeł</a>";
         echo "</div></div>";
     }
     ?>
     <?php if (!is_null($params['move']['toMove']) && !is_null($params['move']['whereMove'])) {
-
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/?action=list'>Anuluj</a>";
         echo "<a href='/?action=moveLeaf&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś sam obiekt</a>";
@@ -33,35 +30,42 @@
         echo "</div></div>";
     }
     ?>
-    
+
     <?php
-        require_once("templates/forms.php");
+    require_once("templates/forms.php");
     ?>
+
     <div class="listCon">
+        <div class="linkCon">
+            <p>Sortowanie wg. dodania do bazy</p>
+            <a href='/?action=list&sortBy=ASC'>Od najstarszych</a>
+            <a href='/?action=list&sortBy=DESC'>Od najnowszych</a>
+        </div>
         <ul>
             <?php
-            // dump($buildedTree);
             function loop($tree)
             {
                 if (array_key_exists('children', $tree)) {
+                    echo "<li><span class='caret'><div class='list'>" . $tree['title'] . "</div></span>";
+                    echo "<ul class='nested'>";
                     foreach ($tree['children'] as $tree) {
-
-                        echo "<ul>";
-                        echo $tree['title'];
+                        echo "<li>";
                         loop($tree);
-                        echo "</ul>";
                     }
+                    echo "</ul>";
+                } else {
+                    echo "<li><div class='list'>" . $tree['title'] . "</div></li>";
                 }
             }
-
             foreach ($buildedTree as $tree) {
-                echo "<li>".$tree['title']."</li>";
                 loop($tree);
             }
-
             ?>
         </ul>
     </div>
+
+    <script type="text/javascript" src="Public/script.js"></script>
+
 </body>
 
 </html>

@@ -11,14 +11,15 @@ use App\Exception\StorageException;
 class TreeModel extends AbstractModel
 {
 
-    public function listTree(): array
+    public function listTree(string $sortBy = 'ASC'): array
     {
+
         try {
             $q = "SELECT 
          parent_id,
          node.title AS title, node.id
          FROM tree AS node
-         ORDER BY id";
+         ORDER BY id $sortBy";
             $result = $this->conn->query($q);
             return $result->fetchAll(PDO::FETCH_ASSOC);
         } catch (Throwable $e) {

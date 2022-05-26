@@ -11,7 +11,8 @@ class TreeController extends AbstractController
 {
     public function listAction(array $alert = []): void
     {
-            $tree = $this->treeModel->listTree();
+            $sortBy = $this->request->getParam('sortBy') ?? 'ASC';
+            $tree = $this->treeModel->listTree($sortBy);
             $newTree = $this->treeModel->buildTree($tree, 0);
             $params = [
                 'alert' => $this->request->getParam('action', 'list'),
