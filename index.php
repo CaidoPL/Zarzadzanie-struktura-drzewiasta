@@ -11,14 +11,14 @@ spl_autoload_register(
 );
 require_once("src/Utils/debug.php");
 
-use App\Controllers\Controller;
+use App\Controllers\TreeController;
 use App\Exception\AppException;
 use App\Request;
 
 $config = require_once("config/config.php");
 $request = new Request($_GET, $_POST, $_SERVER);
 try {
-    (new Controller($request, $config))->run();
+    (new TreeController($request, $config))->run();
 } catch (AppException $e) {
     echo '<h1>Error occurred in application</h1>';
     echo "<h3>" . $e->getMessage() . "</h3>";
