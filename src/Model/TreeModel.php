@@ -48,19 +48,30 @@ class TreeModel extends AbstractModel
         }
     }
 
+
+
     public function deleteNode(int $id): void
     {
         try {
+
             $tree = $this->listTree();
             $buildedTree = $this->buildTree($tree, $id);
+            $buildedTree2 = $this->buildTree($tree, 38);
+            dump($buildedTree2);
             $toDeleteId = [];
-            foreach ($buildedTree as $childrenTree) {
-                array_push($toDeleteId, $childrenTree['id']);
-                if (array_key_exists('children', $childrenTree)) {
-                    foreach ($childrenTree['children'] as $tree) {
+            function foreachLoop(array $toDeleteId, array $tree): array
+            {
+                if (array_key_exists('children', $tree)) {
+                    foreach ($tree['children'] as $tree) {
                         array_push($toDeleteId, $tree['id']);
+                        $toDeleteId = foreachLoop($toDeleteId, $tree);
                     }
                 }
+                return $toDeleteId;
+            }
+            foreach ($buildedTree as $tree) {
+                array_push($toDeleteId, $tree['id']);
+                $toDeleteId = foreachLoop($toDeleteId, $tree);
             }
             $flag = true;
             array_push($toDeleteId, $id);
@@ -73,7 +84,9 @@ class TreeModel extends AbstractModel
                     $r = $r . ',' . $value;
                 };
             }
+
             $q1 = "DELETE FROM tree WHERE id IN(" . $r . ")";
+            dump($r);
             $this->conn->query($q1);
         } catch (Throwable $e) {
             throw new StorageException('Błąd przy usuwaniu obiektu z bazy danych');
@@ -146,7 +159,7 @@ class TreeModel extends AbstractModel
         try {
             $title = $this->conn->quote($params['title']);
             $id = (int) $params['id'];
-            $q = "UPDATE tree SET title = '$title' WHERE id = $id";
+            $q = "UPDATE tree SET title = $title WHERE id = $id";
             $this->conn->query($q);
         } catch (Throwable $e) {
             throw new StorageException('Błąd przy edycji obiektu');

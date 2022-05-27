@@ -16,7 +16,7 @@
     <?php if (!is_null($params['toDelete'])) {
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/?action=list'>Anuluj</a>";
-        echo "<a href='/?action=deleteLeaf&id=" . $params['toDelete'] . "'>Usuń pojedyńczy liść</a>";
+        echo "<a href='/?action=deleteLeaf&id=" . $params['toDelete'] . "'>Usuń pojedyńczy obiekt</a>";
         echo "<a href='/?action=deleteNode&id=" . $params['toDelete'] . "'>Usuń cały węzeł</a>";
         echo "</div></div>";
     }
@@ -24,7 +24,7 @@
     <?php if (!is_null($params['move']['toMove']) && !is_null($params['move']['whereMove'])) {
         echo "<div class='hiddenCon'> <div class='hidden'>";
         echo "<a href='/?action=list'>Anuluj</a>";
-        echo "<a href='/?action=moveLeaf&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś sam obiekt</a>";
+        echo "<a href='/?action=moveLeaf&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś pojedyńczy obiekt</a>";
         echo "<a href='/?action=moveNode&toMoveId=" . $params['move']['toMove'] . "&whereMoveId=" . $params['move']['whereMove'] . "'>Przenieś cały węzeł</a>";
 
         echo "</div></div>";
@@ -46,8 +46,8 @@
             function loop($tree)
             {
                 if (array_key_exists('children', $tree)) {
-                    echo "<li><span class='caret'><div class='list'>" . $tree['title'] . "</div></span>";
-                    echo "<ul class='nested'>";
+                    echo "<li><span class='caret caret-down'><div class='list'>" . $tree['title'] . "</div></span>";
+                    echo "<ul class='nested active'>";
                     foreach ($tree['children'] as $tree) {
                         echo "<li>";
                         loop($tree);

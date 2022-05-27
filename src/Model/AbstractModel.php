@@ -46,5 +46,4 @@ abstract class AbstractModel
             ]
         );
     }
-
 }

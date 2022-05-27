@@ -1,8 +1,3 @@
-li {
-    list-style: none;
-    
-}
-
 .list {
     display: inline-block;
     background-color: cyan;
@@ -79,36 +74,32 @@ a:visited {
     justify-content: space-around;
 }
 
-ul, #myUL {
+ul {
     list-style-type: none;
-  }
-  
-  #myUL {
-    margin: 0;
-    padding: 0;
-  }
-  
-  .caret {
+}
+
+
+.caret {
     cursor: pointer;
-  }
-  
-  .caret::before {
+}
+
+.caret::before {
     content: "\25B6";
     color: black;
     display: inline-block;
     margin-right: 6px;
-  }
-  
-  .caret-down::before {
+}
+
+.caret-down::before {
     -ms-transform: rotate(90deg);
-    -webkit-transform: rotate(90deg); 
-    transform: rotate(90deg);  
-  }
-  
-  .nested {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.nested {
     display: none;
-  }
-  
-  .active {
+}
+
+.active {
     display: block;
-  }
+}

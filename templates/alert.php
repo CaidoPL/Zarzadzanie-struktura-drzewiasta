@@ -30,6 +30,9 @@ if ($params['alert']) {
         case 'movedNodeError':
             echo "<h3 style='color: red;'>Nie można przesunąć gałęzi</h3>";
             break;
+        case 'noData':
+            echo "<h3 style='color: red;'>Błąd: Brak danych</h3>";
+            break;
     }
     echo "</div>";
 }
